@@ -3,7 +3,7 @@ import numpy as np
 def vec_norm(vec : np.ndarray):
     return sum(vec**2)
 
-def gradient_descent(f, f_grad, v0, alpha, eps, eps1, step):
+def gradient_descent(f, f_grad, v0, alpha, eps, eps1, step, f0 = None):
     if alpha < eps:
         return v0
     
@@ -12,12 +12,17 @@ def gradient_descent(f, f_grad, v0, alpha, eps, eps1, step):
     if vec_norm(grad) < eps1:
         return v0
     
+    _f0 = f0
+    if _f0 is None:
+        _f0 = f(*v0)
+
     v1 = v0 - grad * alpha
-    print(f'calculating function value for step {step}')
-    if f(*v1) > f(*v0):
-        return gradient_descent(f, f_grad, v0, alpha/2, eps, eps1, step+1)
+    _f1 = f(*v1)
+    print(f'calculated function value for step {step}')
+    if _f1 > _f0:
+        return gradient_descent(f, f_grad, v0, alpha/2, eps, eps1, step+1, _f0)
     else:
-        return gradient_descent(f, f_grad, v1, alpha, eps, eps1, step+1)
+        return gradient_descent(f, f_grad, v1, alpha, eps, eps1, step+1, _f1)
 
 def main():
     f = lambda x, y : 5*x**2 + 5*y**2 + 8*x*y
